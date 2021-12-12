@@ -1,0 +1,285 @@
+....................................................................
+Splashscreen Coding
+......................................................................
+Dim ctr, ctr2, r As Double
+Dim ctr3 As String
+
+Private Sub Timer1_Timer()
+ctr = 0
+If ctr2 <= 100 Then
+    Randomize
+    r = Int((200 - 100 + 1) * Rnd + 100)
+    ctr = r / 50
+    ctr = Round(ctr, 0)
+    ctr = ctr2 + ctr
+    ctr3 = Str(ctr)
+     If ctr >= 100 Then
+        Percentage.Caption = "100%"
+        shpProgress.Width = 7935
+        Login.Show
+        Unload Me
+    Else
+        shpProgress.Width = shpProgress.Width + r
+        'Percentage.Caption = (ctr3) + "%"
+        ctr2 = Int(ctr3)
+    End If
+End If
+
+End Sub
+......................................................................................................
+
+
+
+
+
+.......................................................................................................
+LoginPage
+.......................................................................................................
+
+'Global Declaration
+Dim user As String
+Dim password As String
+'To Show & Hide the Password
+Private Sub Check1_Click()
+If Check1.Value = 1 Then
+  Check1.ToolTipText = "Hide Password"
+  txtPass.PasswordChar = ""
+Else
+  Check1.ToolTipText = "Show Password"
+  txtPass.PasswordChar = "*"
+End If
+End Sub
+
+Private Sub cmdLogin_Click()
+user = "Cosmeta"
+password = "123"
+
+If (user = txtUsername.Text And password = txtPass.Text) Then
+    HomePage.Show
+    MsgBox "Welcome To Cosmeta"
+    Unload Me
+Else
+    MsgBox "Username or Password is Not Correct"
+End If
+
+End Sub
+
+Private Sub txtPass_KeyPress(KeyAscii As Integer)
+If KeyAscii = 13 Then
+    Call cmdLogin_Click
+End If
+
+End Sub
+
+Private Sub txtUsername_KeyPress(KeyAscii As Integer)
+If KeyAscii = 13 Then
+    txtPass.SetFocus
+End If
+End Sub
+...............................................................
+
+
+
+
+..................................................................
+HomePage
+.................................................................
+
+Private Sub Form_Load()
+txtSearch.Visible = False
+End Sub
+
+Private Sub imgSearch_Click()
+txtSearch.Visible = True
+txtSearch.Enabled = True
+End Sub
+
+Private Sub lblBill_Click()
+frmBill.Show
+End Sub
+
+Private Sub lblDealer_Click()
+frmDealer.Show
+End Sub
+
+Private Sub lblOrder_Click()
+frmOrder.Show
+End Sub
+
+Private Sub lblProduct_Click()
+frmProducts.Show
+End Sub
+
+Private Sub lblStaff_Click()
+frmStaff.Show
+End Sub
+
+
+'Code for Closing Entire software on Exit Button
+Private Sub Form_Unload(Cancel As Integer)
+End
+End Sub
+
+.............................................................................
+
+
+
+.............................................................................
+.............................................................................
+Product Form Code
+.............................................................................
+............................................................................
+
+Private Sub cmdAddNew_Click()
+    rs.AddNew
+    Call cmdClear_Click
+    'Module1.retData ("Select (Max(ProductID)) from Product")
+    'txtProductNo.Text = rs.Fields(0).Value + 1
+End Sub
+
+Private Sub cmdDelete_Click()
+Dim Confirm As String
+Confirm = MsgBox("Are You Sure, You Want To delete this " & rs!ProductName & " Record ?", vbYesNo + vbCritical, "Delete Record Confirmation!!!")
+If Confirm = vbYes Then
+ rs.Delete
+ MsgBox "Record deleted Successfully", vbInformation, "Cosmeta"
+ rs.MoveNext
+ rs.Update
+End If
+End Sub
+
+Private Sub cmdLast_Click()
+rs.MoveLast
+Call LoadData
+End Sub
+
+Private Sub cmdNext_Click()
+rs.MoveNext
+If (rs.EOF = True) Then
+ rs.MoveFirst
+End If
+Call LoadData
+End Sub
+
+Private Sub cmdPrevious_Click()
+rs.MovePrevious
+If (rs.BOF = True) Then
+ rs.MoveLast
+End If
+Call LoadData
+End Sub
+
+Private Sub cmdSave_Click()
+    If (txtProductNo.Text = "") And (txtProductName.Text = "") And (txtBrand.Text = "") And (Combo1.Text = "") And (txtCostPrice.Text = "") And (txtPrice.Text = "") And (txtStock.Text = "") Then
+        MsgBox "Please Enter Some Data", vbInformation, "Cosmeta"
+    Else
+        'rs.Fields(0) = txtProductNo.Text      Dont uncomment It Because ID is Not Updatable You Have Assigned PID as Auto Number
+        
+        rs.Fields("ProductName") = txtProductName.Text
+        rs.Fields(2) = txtBrand.Text
+        rs.Fields("Category") = Combo1.Text
+        rs!CostPrice = txtCostPrice
+        rs!SellingPrice = txtPrice.Text
+        rs!StockLevel = txtStock.Text
+        rs!Description = txtDescription.Text
+    
+        rs.Update
+        MsgBox ("Record Saved!!!!")
+    
+    End If
+    
+End Sub
+
+Private Sub Form_Load()
+ Module1.Connect
+ Module1.retData "Select * from Product"
+ Call LoadData
+ Set DataGrid1.DataSource = rs
+ DataGrid1.Refresh
+End Sub
+
+Private Sub LoadData()
+
+    txtProductNo.Text = rs.Fields(0)
+    txtProductName.Text = rs.Fields("ProductName")
+    txtBrand.Text = rs.Fields(2)
+    Combo1.Text = rs.Fields("Category")
+    txtCostPrice = rs!CostPrice
+    txtPrice.Text = rs!SellingPrice
+    txtStock.Text = rs!StockLevel
+    txtDescription.Text = rs!Description
+    
+End Sub
+
+
+Private Sub cmdClear_Click()
+    txtProductNo.Text = ""
+    txtProductName.Text = ""
+    txtBrand.Text = ""
+    Combo1.Text = ""
+    txtCostPrice.Text = ""
+    txtPrice.Text = ""
+    txtStock.Text = ""
+    txtDescription.Text = ""
+End Sub
+
+
+
+Private Sub cmdFirst_Click()
+rs.MoveFirst
+Call LoadData
+End Sub
+
+
+Private Sub Combo1_KeyPress(KeyAscii As Integer)
+If KeyAscii = 13 Then
+    txtCostPrice.SetFocus
+End If
+End Sub
+
+
+Private Sub txtBrand_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        Combo1.SetFocus
+    End If
+End Sub
+
+Private Sub txtCostPrice_KeyPress(KeyAscii As Integer)
+If KeyAscii = 13 Then
+    txtPrice.SetFocus
+End If
+End Sub
+
+Private Sub txtDescription_KeyPress(KeyAscii As Integer)
+If KeyAscii = 13 Then
+    cmdSave.SetFocus
+End If
+End Sub
+
+Private Sub txtPrice_KeyPress(KeyAscii As Integer)
+If KeyAscii = 13 Then
+    txtStock.SetFocus
+End If
+End Sub
+
+Private Sub txtProductName_KeyPress(KeyAscii As Integer)
+If KeyAscii = 13 Then
+    txtBrand.SetFocus
+End If
+End Sub
+
+Private Sub txtProductNo_KeyPress(KeyAscii As Integer)
+If KeyAscii = 13 Then
+    txtProductName.SetFocus
+End If
+End Sub
+
+Private Sub txtStock_KeyPress(KeyAscii As Integer)
+If KeyAscii = 13 Then
+    txtDescription.SetFocus
+End If
+End Sub
+........................................................................................
+
+
+
